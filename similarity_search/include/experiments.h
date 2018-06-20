@@ -221,7 +221,7 @@ public:
       if (LogInfo) LOG(LIB_INFO) << ">>>> Computing effectiveness metrics for " << Method.StrDesc();
 
       unsigned nlevels = Queries[0][0]->hops_per_level_.size();
-      std::vector<unsigned> total_hops_per_level(nlevels, 0);
+      std::vector<uint64_t> total_hops_per_level(nlevels, (uint64_t)0);
 
       for (unsigned QueryPart = 0; QueryPart < ThreadTestQty; ++QueryPart) {
         for (size_t qi = 0; qi < Queries[QueryPart].size(); ++qi) {
@@ -249,14 +249,15 @@ public:
           ExpRes[MethNum]->AddNumCloser(TestSetId, Eval.GetNumCloser());
           ExpRes[MethNum]->AddRecallAt1(TestSetId, Eval.GetRecallAt1());
 
-          for (unsigned l = 0; l <= nlevels; ++l)
-              total_hops_per_level[l] += Queries[QueryPart][qi]->hops_per_level_[l];
+          for (unsigned l = 0; l < nlevels; ++l)
+              total_hops_per_level[l]
+              += (uint64_t)(Queries[QueryPart][qi]->hops_per_level_[l]);
         }
       }
 
-      for (unsigned l = 0; l <= nlevels; ++l)
-          if (LogInfo) LOG(LIB_INFO) << "^^^^ Hops at level : " << l 
-              << "  " << total_hops_per_level[l] ;
+      for (unsigned l = 0; l < nlevels; ++l)
+          if (LogInfo) LOG(LIB_INFO) << "^^^^ Avg hops at level : " << l 
+              << "  " << (double)(total_hops_per_level[l])/(double)(numquery);
     }
 
     config.GetSpace().SetIndexPhase();
