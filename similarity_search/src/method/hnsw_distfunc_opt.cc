@@ -496,9 +496,12 @@ namespace similarity {
         dist_t curdist = (fstdistfunc_(
             pVectq, (float *)(data_level0_memory_ + enterpointId_ * memoryPerObject_ + offsetData_ + 16), qty, TmpRes));
 
+        query->hops_per_level_.resize(1 + maxlevel1, 0);
         for (int i = maxlevel1; i > 0; i--) {
             bool changed = true;
             while (changed) {
+                ++(query->hops_per_level_[i]);
+
                 changed = false;
                 int *data = (int *)(linkLists_[curNodeNum] + (maxM_ + 1) * (i - 1) * sizeof(int));
                 int size = *data;
@@ -551,6 +554,7 @@ namespace similarity {
             _mm_prefetch(data_level0_memory_ + (*(data + 1)) * memoryPerObject_ + offsetData_, _MM_HINT_T0);
             _mm_prefetch((char *)(data + 2), _MM_HINT_T0);
 
+            ++(query->hops_per_level_[0]);
             for (int j = 1; j <= size; j++) {
                 int tnum = *(data + j);
                 _mm_prefetch((char *)(massVisited + *(data + j + 1)), _MM_HINT_T0);

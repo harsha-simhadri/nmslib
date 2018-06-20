@@ -167,7 +167,6 @@ public:
 
       QueryIds.resize(ThreadTestQty);
       Queries.resize(ThreadTestQty);
-
       /*
        * Because each thread uses its own parameter set, we must use
        * exactly ThreadTestQty sets.
@@ -221,6 +220,9 @@ public:
 
       if (LogInfo) LOG(LIB_INFO) << ">>>> Computing effectiveness metrics for " << Method.StrDesc();
 
+      unsigned nlevels = Queries[0][0]->hops_per_level_.size();
+      std::vector<unsigned> total_hops_per_level(nlevels, 0);
+
       for (unsigned QueryPart = 0; QueryPart < ThreadTestQty; ++QueryPart) {
         for (size_t qi = 0; qi < Queries[QueryPart].size(); ++qi) {
           size_t            q = QueryIds[QueryPart][qi] ;
@@ -247,8 +249,14 @@ public:
           ExpRes[MethNum]->AddNumCloser(TestSetId, Eval.GetNumCloser());
           ExpRes[MethNum]->AddRecallAt1(TestSetId, Eval.GetRecallAt1());
 
+          for (unsigned l = 0; l <= nlevels; ++l)
+              total_hops_per_level[l] += Queries[QueryPart][qi]->hops_per_level_[l];
         }
       }
+
+      for (unsigned l = 0; l <= nlevels; ++l)
+          if (LogInfo) LOG(LIB_INFO) << "^^^^ Hops at level : " << l 
+              << "  " << total_hops_per_level[l] ;
     }
 
     config.GetSpace().SetIndexPhase();

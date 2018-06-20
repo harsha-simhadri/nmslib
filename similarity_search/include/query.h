@@ -32,6 +32,8 @@ class Query {
   uint64_t DistanceComputations() const;
   void AddDistanceComputations(uint64_t DistComp) { distance_computations_ += DistComp; }
 
+  std::vector<unsigned> hops_per_level_;
+
   void ResetStats();
   virtual dist_t Distance(const Object* object1, const Object* object2) const;
   // Distance can be asymmetric!
