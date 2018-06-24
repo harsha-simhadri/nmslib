@@ -8,7 +8,7 @@ do
 					       -i /mnt/bing_kann/metis/metisvector.txt \
 					       -q /mnt/bing_kann/metis/metis2kquery.txt \
 					       --threadTestQty 32 -k 32 \
-					       --cachePrefixGS /mnt/bing_kann/metis/met_gs_ --maxCacheGSRelativeQty 128 \
+					       --cachePrefixGS /mnt/bing_kann/metis/metis_gs_ --maxCacheGSRelativeQty 128 \
 					       --method hnsw --createIndex M=${Mval},efConstruction=${efCval},searchMethod=0 \
 					       --queryTimeParams efSearch=${efSval} \
 					       -o /mnt/bing_kann/metis/out_M${Mval}_efC${efCval}_efS${efSval} \
