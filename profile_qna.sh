@@ -1,8 +1,8 @@
-for Mval in 128 256
+for Mval in 64 128
 do
-    for efCval in  128 256
+    for efCval in  128 
     do
-	for efSval in 64 128
+	for efSval in 32
 	do
 	    similarity_search/release/experiment -s l2  --distType float \
 					       -i /mnt/bing_kann/qna/qna.txt \
