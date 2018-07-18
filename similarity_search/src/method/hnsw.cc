@@ -194,6 +194,7 @@ namespace similarity {
             return;
         }
         ElList_.resize(this->data_.size());
+        LOG(LIB_INFO) << "@@@ ElList_ size = " << ElList_.size();
         // One entry should be added before all the threads are started, or else add() will not work properly
         HnswNode *first = new HnswNode(this->data_[0], 0 /* id == 0 */);
         first->init(getRandomLevel(mult_), maxM_, maxM0_);
@@ -321,6 +322,8 @@ namespace similarity {
         }
 
         int friendsSectionSize = (maxM0_ + 1) * sizeof(int);
+        LOG(LIB_INFO) << "@@@ friendsSection size = " << friendsSectionSize;
+
 
         // Checking for maximum size of the datasection:
         int dataSectionSize = 1;
@@ -328,6 +331,8 @@ namespace similarity {
             if (ElList_[i]->getData()->bufferlength() > dataSectionSize)
                 dataSectionSize = ElList_[i]->getData()->bufferlength();
         }
+        LOG(LIB_INFO) << "@@@ dataSection size = " << dataSectionSize;
+
 
         // Selecting custom made functions
         if (space_.StrDesc().compare("SpaceLp: p = 2 do we have a special implementation for this p? : 1") == 0 &&
@@ -374,10 +379,14 @@ namespace similarity {
         pmgr.CheckUnused();
         LOG(LIB_INFO) << "searchMethod			  = " << searchMethod_;
         memoryPerObject_ = dataSectionSize + friendsSectionSize;
+        LOG(LIB_INFO) << "@@@ memoryPerObject = " << memoryPerObject_;
+
 
         size_t total_memory_allocated = (memoryPerObject_ * ElList_.size());
         data_level0_memory_ = (char *)malloc(memoryPerObject_ * ElList_.size());
         CHECK(data_level0_memory_);
+        LOG(LIB_INFO) << "@@@ total_memory_allocated (for data and l0 links) = " << total_memory_allocated;
+
 
         offsetLevel0_ = dataSectionSize;
         offsetData_ = 0;
@@ -414,6 +423,8 @@ namespace similarity {
 
         /////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////
+        auto total_memory_without_higher_levels = total_memory_allocated;
+
         linkLists_ = (char **)malloc(sizeof(void *) * ElList_.size());
         CHECK(linkLists_);
         for (long i = 0; i < ElList_.size(); i++) {
@@ -429,6 +440,8 @@ namespace similarity {
             linkLists_[i] = linkList;
             ElList_[i]->copyHigherLevelLinksToOptIndex(linkList, 0);
         };
+        LOG(LIB_INFO) << "@@@ Extra memory for higher levels = " << total_memory_allocated - total_memory_without_higher_levels;
+
 
         LOG(LIB_INFO) << "Finished making optimized index";
         LOG(LIB_INFO) << "Maximum level = " << enterpoint_->level;
