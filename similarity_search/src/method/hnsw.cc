@@ -424,10 +424,12 @@ namespace similarity {
         /////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////
         auto total_memory_without_higher_levels = total_memory_allocated;
+        std::vector<int> elems_at_level(this->maxlevel_ + 1, 0);
 
         linkLists_ = (char **)malloc(sizeof(void *) * ElList_.size());
         CHECK(linkLists_);
         for (long i = 0; i < ElList_.size(); i++) {
+            elems_at_level[ElList_[i]->level]++;
             if (ElList_[i]->level < 1) {
                 linkLists_[i] = nullptr;
                 continue;
@@ -441,7 +443,8 @@ namespace similarity {
             ElList_[i]->copyHigherLevelLinksToOptIndex(linkList, 0);
         };
         LOG(LIB_INFO) << "@@@ Extra memory for higher levels = " << total_memory_allocated - total_memory_without_higher_levels;
-
+        for (int l = 0; l < this->maxlevel_; ++l)
+            LOG(LIB_INFO) << "@@@ #nodes at level " << l << " = " << elems_at_level[l];
 
         LOG(LIB_INFO) << "Finished making optimized index";
         LOG(LIB_INFO) << "Maximum level = " << enterpoint_->level;
